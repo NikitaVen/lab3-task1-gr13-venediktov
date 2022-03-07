@@ -4,12 +4,12 @@
 
 const int class_size = 23;
 
-static int comparator(const void *a, const void * b)
+static int comparator(const void *a, const void *b)
 {
   if (*(double*)a > *(double*)b) 
-    return 1;
-  else if (*(double*)a < *(double*)b) 
     return -1;
+  else if (*(double*)a < *(double*)b) 
+    return 1;
   else 
     return 0; 
 }
@@ -17,8 +17,16 @@ static int comparator(const void *a, const void * b)
 double getThirdHighest(double* class1, double* class2)
 {
   qsort(class1, class_size, sizeof(double), comparator);
-  qsort(class1, class_size, sizeof(double), comparator);
-  return comparator(&class1[2], &class2[2]);
+  qsort(class2, class_size, sizeof(double), comparator);
+  return comparator(&class2[2], &class1[2]);
+}
+
+void printClassHeight(double* class)
+{
+  int size = sizeof(class)/sizeof(double);
+  for(int i = 0; i < class_size; ++i)
+    printf("%.1f ", class[i]);
+  printf("\n");
 }
 
 int main (int argc, char** argv)
@@ -35,23 +43,28 @@ int main (int argc, char** argv)
   for(int i = 0; i < class_size; ++i)
   {
     class1[i] = strtod(argv[i + 1], NULL);
-    if(!class1[i])
+    if(class1[i] <= 0)
     {
-      printf("height is nullable or can't be parsed to double\n");
+      printf("height is not positive or can't be parsed to double\n");
       return -2;
     }
   }
-  for(int i = 0; i < class_size * 2; ++i)
+  for(int i = 0; i < class_size; ++i)
   {
     class2[i] = strtod(argv[i + class_size + 1], NULL);
-    if(!class2[i])
+    if(class2[i] <= 0)
     {
-      printf("height is nullable or can't be parsed to double\n");
+      printf("height is not positive or can't be parsed to double\n");
       return -2;
     }
   }
-
+  
   int result = getThirdHighest(class1, class2);
-  printf("Number of class where third highest is higher: %s\n" ,result? "1" : !result? "equals" : "2");
+  printf("\n1st class: ");
+  printClassHeight(class1);
+
+  printf("\n2nd class: ");
+  printClassHeight(class2);
+  printf("\nNumber of class where third highest is higher: %s\n" ,result > 0? "1" : !result? "equals" : "2");
   return 0;
 }
